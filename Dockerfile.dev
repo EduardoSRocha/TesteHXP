@@ -1,0 +1,39 @@
+# Use uma imagem base adequada
+FROM node:18 AS builder
+
+# Defina o diretório de trabalho dentro do contêiner
+WORKDIR /usr/src/app
+
+# Configure o NPM para usar o registro público
+RUN npm config set registry https://registry.npmjs.org/
+
+# Copie os arquivos necessários
+COPY package*.json ./
+COPY .npmrc .npmrc
+
+# Limpe o cache do NPM
+RUN npm cache clean --force
+
+# Instale todas as dependências (incluindo dependências de desenvolvimento)
+RUN npm install
+
+# Copie o restante do código fonte
+COPY . .
+
+# Use uma imagem base leve para desenvolvimento
+FROM node:18-alpine
+
+# Defina o diretório de trabalho
+WORKDIR /usr/src/app
+
+# Copie o código-fonte e as dependências instaladas da fase de builder
+COPY --from=builder /usr/src/app ./
+
+# Instale globalmente o nodemon para hot reload
+RUN npm install -g @nestjs/cli
+
+# Exponha a porta da aplicação
+EXPOSE 3000
+
+# Comando padrão para executar a aplicação em modo de desenvolvimento
+CMD ["npm", "run", "start:dev"]
