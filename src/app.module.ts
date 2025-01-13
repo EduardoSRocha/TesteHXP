@@ -7,7 +7,9 @@ import { OrdersModule } from './orders/orders.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-
+import { UploadModule } from './upload/upload.module';
+import { S3Service } from './services/s3.service';
+import { OnModuleInit } from '@nestjs/common';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,8 +27,15 @@ import { DashboardModule } from './dashboard/dashboard.module';
     ProductsModule,
     CategoriesModule,
     OrdersModule,
-    DashboardModule],
+    DashboardModule,
+    UploadModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, S3Service],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly s3Service: S3Service) {}
+
+  async onModuleInit() {
+    await this.s3Service.createBucket('meu-bucket-local');
+  }
+}
