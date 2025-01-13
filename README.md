@@ -1,85 +1,141 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# E-commerce API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta API permite gerenciar categorias, produtos e pedidos em um sistema de e-commerce. A seguir, são detalhadas as rotas e os métodos suportados pela API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Endpoints
 
-## Description
+### Categories
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **POST /categories**
+  - Cria uma nova categoria.
+  - **Body**:
+    ```json
+    {
+      "name": "Movies"
+    }
+    ```
 
-## Project setup
+- **GET /categories**
+  - Recupera todas as categorias.
+
+- **GET /categories/:categoryId**
+  - Recupera uma categoria específica pelo ID.
+
+- **PATCH /categories/:categoryId**
+  - Atualiza uma categoria pelo ID.
+  - **Body**:
+    ```json
+    {
+      "name": "Updated Movies"
+    }
+    ```
+
+- **DELETE /categories/:id**
+  - Deleta uma categoria pelo ID.
+
+### Orders
+
+- **POST /orders**
+  - Cria um novo pedido.
+  - **Body**:
+    ```json
+    {
+      "date": "2025-01-12T12:34:56.789Z",
+      "productIds": ["{{productId}}"],
+      "total": 2599.98
+    }
+    ```
+
+- **GET /orders**
+  - Recupera todos os pedidos.
+
+- **GET /orders/:orderId**
+  - Recupera um pedido específico pelo ID.
+
+- **PATCH /orders/:orderId**
+  - Atualiza um pedido específico.
+  - **Body**:
+    ```json
+    {
+      "total": 2799.98
+    }
+    ```
+
+- **DELETE /orders/:orderId**
+  - Deleta um pedido específico pelo ID.
+
+### Products
+
+- **POST /products**
+  - Cria um novo produto.
+  - **Body**:
+    ```json
+    {
+      "name": "Laptop",
+      "description": "A high-performance laptop",
+      "price": 1299.99,
+      "categoryIds": ["{{categoryId}}"],
+      "imageUrl": "https://s3.amazonaws.com/bucket-name/laptop.jpg"
+    }
+    ```
+
+- **GET /products**
+  - Recupera todos os produtos.
+
+- **GET /products/:productId**
+  - Recupera um produto específico pelo ID.
+
+- **PATCH /products/:productId**
+  - Atualiza um produto específico.
+  - **Body**:
+    ```json
+    {
+      "price": 1399.99
+    }
+    ```
+
+- **DELETE /products/:productId**
+  - Deleta um produto específico pelo ID.
+
+### Dashboard
+
+- **GET /dashboard/metrics**
+  - Recupera as métricas de vendas com base em uma categoria e intervalo de datas.
+  - **Query Parameters**:
+    - `categoryId` (opcional)
+    - `startDate` (opcional)
+    - `endDate` (opcional)
+
+## Variáveis
+
+A API utiliza variáveis para facilitar o teste das rotas no Postman. As variáveis são:
+
+- `categoryId`: ID da categoria.
+- `productId`: ID do produto.
+- `orderId`: ID do pedido.
+
+## Testes Automatizados
+
+A API possui scripts automatizados no Postman para realizar testes após a execução de cada requisição. Esses testes incluem a configuração de variáveis de resposta, como `categoryId`, `productId` e `orderId`, que são armazenadas como variáveis de coleção.
+
+## Ambiente de Desenvolvimento
+
+1. Clone o repositório.
+2. Instale as dependências.
+3. Execute a API localmente no servidor `localhost` na porta `3000`.
 
 ```bash
-$ npm install
+npm install
+npm start
 ```
+Agora você pode interagir com os endpoints da API e realizar os testes no Postman.
 
-## Compile and run the project
+## Contribuições
+Sinta-se à vontade para fazer contribuições! Abra um Pull Request ou reporte um problema.
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+## Licença
+Este projeto é licenciado sob a MIT License.
 ```
+Esse `README.md` inclui os detalhes principais da API, incluindo as rotas, métodos, variáveis e um guia básico de como testar os endpoints com o Postman.
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
