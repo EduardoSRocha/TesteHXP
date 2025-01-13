@@ -1,15 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Product } from './schemas/product.schema';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Product.name) private productModel: Model<Product>) {}
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<Product>,
+    @Inject(forwardRef(() => CategoriesService)) private categoriesService: CategoriesService,
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+
+    for (const categoryId of createProductDto.categoryIds) {
+      await this.categoriesService.findOne(categoryId);
+    }
+
     const product = new this.productModel(createProductDto);
     return product.save();
   }
@@ -24,6 +33,18 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
     return product;
+  }
+
+  async findByIds(ids: Types.ObjectId[]): Promise<Product[]> {
+    const products = await this.productModel.find({ _id: { $in: ids } }).exec();
+    if (products.length === 0) {
+      throw new NotFoundException(`No products found with the given IDs`);
+    }
+    return products;
+  }
+
+  async findByCategoryId(categoryId: string): Promise<Product[]> {
+    return this.productModel.find({ categoryIds: { $in: [categoryId] } }).exec();
   }
 
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
